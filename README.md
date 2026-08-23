@@ -39,7 +39,7 @@ Stream ended without finish_reason
 
 ```bash
 # 从 GitHub Release 安装（发布后会给出具体 tgz 链接）
-dsh plugin --profile web add https://github.com/<you>/resume-stream/releases/download/v1.0.0/resume-stream-1.0.0.tgz
+dsh plugin --profile web add https://github.com/XJungit/resume-stream/releases/download/v1.0.0/resume-stream-1.0.0.tgz
 ```
 
 > 安装 web 插件需要重启 DSH（会结束当前会话）。
