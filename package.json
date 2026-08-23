@@ -1,5 +1,5 @@
 {
-  "name": "@omp/resume-stream",
+  "name": "@omp/dsh-resume-stream",
   "version": "1.0.0",
   "description": "Auto-resume LLM streams that end without a finish_reason (all providers), with a persistent hit counter and an in-message-list UI notice + toast.",
   "type": "module",
