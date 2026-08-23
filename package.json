@@ -1,7 +1,7 @@
 {
   "name": "@omdp/dsh-resume-stream",
-  "version": "1.0.1",
-  "description": "Auto-resume LLM streams that end without a finish_reason (all providers), with a persistent hit counter and an in-message-list UI notice + toast.",
+  "version": "1.0.2",
+  "description": "Auto-resume LLM streams cut by transport-level truncation (TRANSPORT: finish_reason missing, premature close, ECONNRESET, etc.) for all providers, with an in-message-list UI notice + toast and an execution log.",
   "type": "module",
   "main": "lib/index.js",
   "exports": {
@@ -14,7 +14,12 @@
       "patch": "./cordis.patch.yml"
     },
     "client": {
-      "platform": "web"
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-connection",
+        "@deepseek-ai/dsh-client-runtime",
+        "@deepseek-ai/dsh-client-ui-conversation"
+      ]
     }
   },
   "files": [
