@@ -3,5 +3,5 @@
 # loadable as a profile bundle. The client half is declared by the
 # `dsh.client` field in package.json (platform: web) + the `./client` export.
 - insert:
-    - id: resume-stream
-      name: 'resume-stream'
+    - id: '@omdp/dsh-resume-stream'
+      name: '@omdp/dsh-resume-stream'
