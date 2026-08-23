@@ -17,6 +17,11 @@
       "platform": "web"
     }
   },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "README.md"
+  ],
   "license": "MIT",
   "peerDependencies": {
     "@deepseek-ai/cordis": "^4.0.1",
