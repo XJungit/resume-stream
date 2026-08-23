@@ -1,5 +1,5 @@
 {
-  "name": "resume-stream",
+  "name": "@omp/resume-stream",
   "version": "1.0.0",
   "description": "Auto-resume LLM streams that end without a finish_reason (all providers), with a persistent hit counter and an in-message-list UI notice + toast.",
   "type": "module",
@@ -22,6 +22,9 @@
     "cordis.patch.yml",
     "README.md"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "license": "MIT",
   "peerDependencies": {
     "@deepseek-ai/cordis": "^4.0.1",
