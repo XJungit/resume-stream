@@ -1,7 +1,7 @@
 {
   "name": "@omdp/dsh-resume-stream",
-  "version": "1.0.10",
-  "description": "Auto-resume LLM streams cut by transport-level truncation (TRANSPORT: finish_reason missing, premature close, ECONNRESET, etc.) for all providers, with an in-message-list UI notice + toast and an execution log.",
+  "version": "1.0.11",
+  "description": "Auto-resume LLM streams cut by transport-level truncation (TRANSPORT: finish_reason missing, premature close, ECONNRESET, etc.) for all providers. Rewrites the cut into a clean stop preserving streamed content; shows an inline badge on resumed turns via a conversation Definition.",
   "type": "module",
   "main": "lib/index.js",
   "exports": {
