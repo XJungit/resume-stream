@@ -18,5 +18,11 @@ jobs:
         with:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
+      - name: Diagnose npm identity
+        run: |
+          echo "=== npm profile get ==="
+          npm profile get 2>&1 || true
+          echo "=== npm token ls ==="
+          npm token ls 2>&1 || true
       - name: Publish
         run: npm publish --access public
