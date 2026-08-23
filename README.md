@@ -21,6 +21,24 @@ Stream ended without finish_reason
 - **任何 provider** 触发的该错误都会被容忍（不再像上游 `llm-fallback` /
   `dsh-opencode-zen-compat` 那样只对 opencode 系生效）。
 
+## 原理（机制备忘，避免再绕弯）
+
+断流错误在**底层**和**插件层**形态不同，这点极易误判：
+
+- **底层**：`pi-ai`（`@earendil-works/pi-ai` 的 `openai-completions.js:438`）在 SSE 关闭且
+  没有 `finish_reason` 时 `throw new Error("Stream ended without finish_reason")`。
+- **插件层**：`dsh-llm-pi-ai` 适配器在翻译层把它**转换**成 in-band
+  `finish{kind:'error', failure:{message:'Stream ended without finish_reason'}}` 块
+  再喂给 `llm/stream`（见 `dsh-llm-pi-ai/lib/index.js:1328-1330` 注释与
+  `1437-1446` 的 `case "error"`）。**所以在 `llm/stream` 这一层拿到的是【块，不是异常】。**
+
+因此本插件的 `llm/stream` 钩子只需重写该 `finish` 块为
+`{ ...chunk, reason: { kind: 'stop' } }`（`lib/index.js` 的 `tolerateMissingFinishReason`），
+**不要**去 `try/catch` 一个并不存在的"抛出"——那对这条错误是死代码。
+
+> 参考实现：`llt22/dsh-opencode-zen-compat` 早已对 opencode 系路由实现同样的块改写
+> （只是只对 opencode 作用域生效、且无 UI）；本插件在其基础上去掉作用域限制并加 UI + 计数。
+
 ## UI（dsh 一切皆插件）
 
 插件带一个**客户端 half**（`lib/client.js`，通过 `dsh.client.platform: web`
