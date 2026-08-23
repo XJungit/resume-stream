@@ -1,6 +1,6 @@
 {
   "name": "@omdp/dsh-resume-stream",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Auto-resume LLM streams that end without a finish_reason (all providers), with a persistent hit counter and an in-message-list UI notice + toast.",
   "type": "module",
   "main": "lib/index.js",
@@ -28,6 +28,6 @@
   "license": "MIT",
   "peerDependencies": {
     "@deepseek-ai/cordis": "^4.0.1",
-    "@deepseek-ai/dsh-llm": "^0.1.0-rc.6"
+    "@deepseek-ai/dsh-llm": "^0.1.0-rc.6 || ^0.1.1-rc.0"
   }
 }
