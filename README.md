@@ -16,6 +16,23 @@ dsh-llm-pi-ai 适配器会把它翻译成 in-band 的
 其它错误类别（AUTH / QUOTA / RATE_LIMIT / SERVER / CONTEXT_WINDOW_EXCEEDED /
 PI_AI_ERROR 等）以及抛异常式失败（如 idle timeout）一律原样放行，交给上层重试机制。
 
+## 自动接续（v1.0.12+）
+
+改写成 stop 后 agent 轮次会干净结束——内容保住了，但进行中的任务会停在那里等人推。
+对**真中断**（`Connection error.`、ECONNRESET、premature close 等），插件会通过
+`agents.get(sessionId)` 取 live Agent，构造一条 plugin 来源的合成 user 消息并
+`agent.followup(...)` 排队（与官方 goal-round-driver 同一机制），驱动器随即自行开启
+下一轮继续工作，无需手动发"继续"。
+
+两类断流区别对待：
+
+- **真中断** → 改写 stop + 自动排队接续；
+- **Zen 式干净 EOF**（`Stream ended without finish_reason`，正文其实已完整送达，
+  只缺结束标记）→ 只改写 stop，不接续——此时让模型"继续"只会产出填充性废话。
+
+防失控护栏：同一会话连续自动接续上限 **3 次**（任何一次正常收尾都会清零计数）；
+3 秒去重窗防止并发双流重复排队。
+
 ## 机制（v1.0.10+）
 
 - **Host 半**（`lib/index.js`）：`ctx.on('llm/stream')` 用 async generator 包住内部流做
@@ -34,8 +51,11 @@ PI_AI_ERROR 等）以及抛异常式失败（如 idle timeout）一律原样放�
 
 ## 已知限制
 
-- 若切断发生在工具调用进行中，改写为 stop 后该轮到此为止：已生成的内容保留，
-  但未完成的工具调用不会继续执行。这是"保内容"与"报错中断重试"之间的权衡。
+- 自动接续的合成 user 消息会作为一条普通用户消息显示在会话里（带 `[resume-stream]`
+  前缀，来源标记为 plugin）——这是接续机制的工作方式，同时起到向用户说明"为何自己
+  继续跑了"的作用。
+- 若切断发生在工具调用进行中，已排队工具调用的收尾由下一轮的模型自行判断处理；
+  极少数情况下可能需要人工补一句。
 - 同一轮多次断流会各显示一枚徽章（如实反映断流次数，正文带累计 ×N）。
 
 ## 安装（DSH profile bundle）
