@@ -16,19 +16,7 @@ jobs:
         with:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
-      - name: Sanitize auth token
-        env:
-          RAW_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          TOKEN="$(echo "$RAW_TOKEN" | tr -d '[:space:]')"
-          echo "trimmed token length: ${#TOKEN}"
-          echo "starts with npm_: ${TOKEN:0:4}"
-          npm config set //registry.npmjs.org/:_authToken "$TOKEN"
-      - name: Diagnose npm identity
-        run: |
-          echo "=== npm profile get ==="
-          npm profile get 2>&1 || true
-          echo "=== npm token ls ==="
-          npm token ls 2>&1 || true
       - name: Publish
         run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
