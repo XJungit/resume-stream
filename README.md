@@ -19,18 +19,16 @@ PI_AI_ERROR 等）以及抛异常式失败（如 idle timeout）一律原样放�
 ## 自动接续（v1.0.12+）
 
 改写成 stop 后 agent 轮次会干净结束——内容保住了，但进行中的任务会停在那里等人推。
-对**真中断**（`Connection error.`、ECONNRESET、premature close 等），插件会通过
-`agents.get(sessionId)` 取 live Agent，构造一条 plugin 来源的合成 user 消息并
+插件通过 `agents.get(sessionId)` 取 live Agent，构造一条 plugin 来源的合成 user 消息并
 `agent.followup(...)` 排队（与官方 goal-round-driver 同一机制），驱动器随即自行开启
 下一轮继续工作，无需手动发"继续"。
 
-两类断流区别对待：
+**注意**：pi-ai 对任何“正文关闭时没收到 finish_reason”——包括生成到一半被掐断和完整
+收尾——都报告 `Stream ended without finish_reason`，无法从报错文案区分内容是否完整。
+所以本插件对**所有** TRANSPORT 断流都接续，不分类。合成消息本身已指示"若任务已完成
+直接简短收尾"，误接续的代价很小。
 
-- **真中断** → 改写 stop + 自动排队接续；
-- **Zen 式干净 EOF**（`Stream ended without finish_reason`，正文其实已完整送达，
-  只缺结束标记）→ 只改写 stop，不接续——此时让模型"继续"只会产出填充性废话。
-
-防失控护栏：同一会话连续自动接续上限 **3 次**（任何一次正常收尾都会清零计数）；
+防失控护栏：同一会话连续自动接续上限 **5 次**（任何一次正常收尾都会清零计数）；
 3 秒去重窗防止并发双流重复排队。
 
 ## 机制（v1.0.10+）
